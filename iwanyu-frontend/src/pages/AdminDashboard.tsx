@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Users, 
@@ -6,16 +6,10 @@ import {
   TrendingUp, 
   DollarSign,
   Package,
-  Star,
   AlertCircle,
   Activity,
-  Calendar,
   Download,
-  Plus,
-  Eye,
-  Edit,
-  Trash2,
-  Filter
+  Plus
 } from 'lucide-react';
 import Header from '../components/layout/Header';
 import { useAuth } from '../context/AuthContext';
@@ -95,7 +89,7 @@ const AdminDashboard: React.FC = () => {
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
 
-  const fetchDashboardData = async (isRetry = false) => {
+  const fetchDashboardData = useCallback(async (isRetry = false) => {
     if (!isRetry) {
       setLoading(true);
       setError(null);
@@ -159,7 +153,7 @@ const AdminDashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [timeRange, retryCount]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -199,7 +193,7 @@ const AdminDashboard: React.FC = () => {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, []);
+  }, [fetchDashboardData]);
 
   // Auto-refresh after specific time intervals
   useEffect(() => {
@@ -208,36 +202,19 @@ const AdminDashboard: React.FC = () => {
     }, 120000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchDashboardData]);
 
   // Respond to external refresh triggers
   useEffect(() => {
     if (refreshTrigger > 0) {
       fetchDashboardData(true); // Silent refresh when triggered externally
     }
-  }, [refreshTrigger]);
+  }, [refreshTrigger, fetchDashboardData]);
 
   const handleImportSuccess = () => {
     setShowImportModal(false);
     // Refresh dashboard data after successful import
     fetchDashboardData();
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'processing':
-        return 'bg-blue-100 text-blue-800';
-      case 'shipped':
-        return 'bg-purple-100 text-purple-800';
-      case 'delivered':
-        return 'bg-green-100 text-green-800';
-      case 'cancelled':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
   };
 
   if (loading) {

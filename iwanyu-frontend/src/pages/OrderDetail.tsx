@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
   Package, 
@@ -64,12 +64,11 @@ interface OrderDetails {
 
 const OrderDetail: React.FC = () => {
   const { orderId } = useParams<{ orderId: string }>();
-  const { user } = useAuth();
   const [order, setOrder] = useState<OrderDetails | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Mock order data
-  const mockOrder: OrderDetails = {
+  const mockOrder: OrderDetails = useMemo(() => ({
     id: orderId || '1',
     orderNumber: 'IW-2024-001',
     status: 'shipped',
@@ -121,7 +120,7 @@ const OrderDetail: React.FC = () => {
       zipCode: '10001',
       country: 'United States'
     }
-  };
+  }), [orderId]);
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -140,7 +139,7 @@ const OrderDetail: React.FC = () => {
     if (orderId) {
       fetchOrderDetails();
     }
-  }, [orderId]);
+  }, [orderId, mockOrder]);
 
   const getStatusIcon = (status: OrderDetails['status']) => {
     switch (status) {

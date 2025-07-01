@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Store, 
+  
   Smartphone, 
   Users, 
   TrendingUp, 
   Shield, 
   ArrowRight, 
   BookOpen, 
-  Star, 
-  CheckCircle,
   Shirt,
   Home as HomeIcon,
   Dumbbell,

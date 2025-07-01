@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useAdminRefresh } from '../context/AdminRefreshContext';
 import apiService from '../services/api';
-import { Package, Search, Filter, Truck } from 'lucide-react';
+import { Package, Search, Truck } from 'lucide-react';
 
 interface Order {
   id: string;
@@ -34,7 +34,7 @@ const OrdersManagement: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statussetStatusFilter] = useState('all');
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {

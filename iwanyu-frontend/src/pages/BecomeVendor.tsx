@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { ArrowLeft, Mail, Phone, FileText, Check, Upload, AlertCircle, Store, Shield, Info } from 'lucide-react';
+import { ArrowLeft, Phone, FileText, Check, Upload, Shield, Info } from 'lucide-react';
 import Layout from '../components/layout/Layout';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';

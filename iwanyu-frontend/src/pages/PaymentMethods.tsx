@@ -5,14 +5,12 @@ import {
   Edit, 
   Trash2, 
   Check,
-  Shield,
-  AlertCircle
+  Shield
 } from 'lucide-react';
 import Header from '../components/layout/Header';
 import { useAuth } from '../context/AuthContext';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
-import apiService from '../services/api';
 
 interface PaymentMethod {
   id: string;

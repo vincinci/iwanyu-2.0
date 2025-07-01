@@ -3,14 +3,13 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { 
-  Mail, 
+  
   Phone, 
-  MapPin, 
+  
   Clock, 
   MessageSquare, 
   Send,
   CheckCircle,
-  Users,
   HeadphonesIcon
 } from 'lucide-react';
 import Layout from '../components/layout/Layout';
@@ -363,13 +362,14 @@ const Contact: React.FC = () => {
                   <span className="text-green-600">→</span>
                 </a>
                 
-                <a
-                  href="#"
-                  className="flex items-center justify-between p-4 bg-white rounded-lg hover:shadow-md transition-shadow"
+                <button
+                  type="button"
+                  className="flex items-center justify-between p-4 bg-white rounded-lg hover:shadow-md transition-shadow w-full text-left"
+                  onClick={() => {/* Handle live chat */}}
                 >
                   <span className="font-medium text-gray-900">Live Chat</span>
                   <span className="text-green-600">→</span>
-                </a>
+                </button>
                 
                 <a
                   href="tel:+250788123456"

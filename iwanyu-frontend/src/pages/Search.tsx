@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search as SearchIcon, Filter, Grid, List, SlidersHorizontal } from 'lucide-react';
+import { Search as SearchIcon, Grid, List, SlidersHorizontal } from 'lucide-react';
 import Header from '../components/layout/Header';
 import { Product } from '../types';
 import apiService from '../services/api';

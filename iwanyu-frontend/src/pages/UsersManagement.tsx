@@ -23,8 +23,8 @@ const UsersManagement: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState('ALL');
-  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [rolesetRoleFilter] = useState('ALL');
+  const [statussetStatusFilter] = useState('ALL');
   const { user } = useAuth();
   const { triggerRefresh } = useAdminRefresh();
 

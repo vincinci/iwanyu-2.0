@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import { ShoppingBag, CreditCard, MapPin, Phone } from 'lucide-react';
+import { ShoppingBag, Phone } from 'lucide-react';
 import { formatCurrency } from '../utils/helpers';
 import { cartAPI, checkoutAPI, apiService } from '../services/api';
 import { useAuth } from '../context/AuthContext';

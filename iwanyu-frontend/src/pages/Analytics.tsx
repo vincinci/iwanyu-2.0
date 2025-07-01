@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   TrendingUp, 
   Users, 
-  ShoppingCart, 
+  
   Package, 
   DollarSign,
   BarChart3,

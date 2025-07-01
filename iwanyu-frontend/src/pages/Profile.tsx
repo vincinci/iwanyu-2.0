@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   User, 
-  Mail, 
+  
   Phone, 
-  MapPin, 
+  
   Edit3, 
   Save, 
   X, 
