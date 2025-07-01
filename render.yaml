@@ -1,0 +1,61 @@
+services:
+  # Backend API Service
+  - type: web
+    name: iwanyu-backend
+    env: node
+    plan: free
+    buildCommand: ./render-build.sh
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: iwanyu-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        value: https://iwanyu-frontend.onrender.com
+      - key: CORS_ORIGIN
+        value: https://iwanyu-frontend.onrender.com
+    rootDir: backend
+
+  # PostgreSQL Database
+  - type: pgsql
+    name: iwanyu-db
+    plan: free
+    databaseName: iwanyu
+    user: iwanyu
+
+  # Frontend Static Site
+  - type: web
+    name: iwanyu-frontend
+    env: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./build
+    pullRequestPreviewsEnabled: true
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://iwanyu-backend.onrender.com
+      - key: CI
+        value: false
+      - key: GENERATE_SOURCEMAP
+        value: false
+      - key: NODE_OPTIONS
+        value: --max-old-space-size=4096
+    rootDir: iwanyu-frontend
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
