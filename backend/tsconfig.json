@@ -16,7 +16,13 @@
     "experimentalDecorators": true,
     "sourceMap": true,
     "incremental": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "types": ["node"],
+    "typeRoots": ["./node_modules/@types", "../node_modules/@types"],
+    "baseUrl": ".",
+    "paths": {
+      "*": ["node_modules/*", "../node_modules/*"]
+    }
   },
   "include": [
     "src/**/*",

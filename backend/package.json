@@ -46,7 +46,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/multer": "^1.4.13",
-    "@types/node": "^20.19.3",
+    "@types/node": "^24.0.10",
     "@typescript-eslint/eslint-plugin": "^5.59.0",
     "@typescript-eslint/parser": "^5.59.0",
     "eslint": "^8.40.0",
