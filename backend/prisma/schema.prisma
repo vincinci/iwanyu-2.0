@@ -7,12 +7,50 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// SQLite doesn't support enums, so we use String with @default
-// and comments to document the valid values
+// PostgreSQL enums for better type safety
+enum UserRole {
+  CUSTOMER
+  VENDOR
+  ADMIN
+}
+
+enum DocumentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PlanType {
+  FREE
+  PREMIUM
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum WithdrawalStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
 
 model User {
   id          String   @id @default(uuid())
@@ -21,7 +59,7 @@ model User {
   firstName   String
   lastName    String
   phone       String?
-  role        String @default("CUSTOMER") // CUSTOMER, VENDOR, ADMIN
+  role        UserRole @default(CUSTOMER)
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -46,8 +84,8 @@ model Vendor {
   businessType    String
   description     String?
   idDocument      String?        // Path to uploaded ID document
-  documentStatus  String @default("PENDING") // PENDING, APPROVED, REJECTED
-  planType        String @default("FREE")    // FREE, PREMIUM
+  documentStatus  DocumentStatus @default(PENDING)
+  planType        PlanType       @default(FREE)
   isVerified      Boolean        @default(false)
   commission      Float          @default(0.05) // 5% commission
   totalEarnings   Float          @default(0)
@@ -174,8 +212,8 @@ model Order {
   addressId       String
   address         Address       @relation(fields: [addressId], references: [id])
   orderNumber     String        @unique
-  status          String @default("PENDING") // PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
-  paymentStatus   String @default("PENDING") // PENDING, COMPLETED, FAILED, REFUNDED
+  status          OrderStatus   @default(PENDING)
+  paymentStatus   PaymentStatus @default(PENDING)
   subtotal        Float
   tax             Float         @default(0)
   shippingCost    Float         @default(0)
@@ -213,11 +251,11 @@ model Payment {
   order           Order         @relation(fields: [orderId], references: [id])
   amount          Float
   currency        String        @default("RWF")
-  status          String @default("PENDING") // PENDING, COMPLETED, FAILED, REFUNDED
+  status          PaymentStatus @default(PENDING)
   paymentMethod   String?
   transactionRef  String?       // Flutterwave transaction reference
   flwRef          String?       // Flutterwave reference
-  metadata        String?   // JSON string for SQLite compatibility
+  metadata        Json?         // JSON object for PostgreSQL
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
@@ -225,14 +263,14 @@ model Payment {
 }
 
 model Withdrawal {
-  id          String   @id @default(uuid())
+  id          String           @id @default(uuid())
   vendorId    String
-  vendor      Vendor   @relation(fields: [vendorId], references: [id])
+  vendor      Vendor           @relation(fields: [vendorId], references: [id])
   amount      Float
-  currency    String   @default("RWF")
-  status      String   @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
-  bankDetails String    // JSON string for bank details
-  reference   String?  // Flutterwave transfer reference
+  currency    String           @default("RWF")
+  status      WithdrawalStatus @default(PENDING)
+  bankDetails Json             // JSON object for bank details
+  reference   String?          // Flutterwave transfer reference
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

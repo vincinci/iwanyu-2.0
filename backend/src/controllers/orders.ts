@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { prisma, withTransaction } from '../utils/db';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { FlutterwaveService } from '../services/flutterwave';
+import { OrderStatus, PaymentStatus } from '@prisma/client';
 
 interface OrderItem {
   productId: string;
@@ -212,8 +213,8 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response) => {
           userId,
           addressId,
           orderNumber: generateOrderNumber(),
-          status: 'PENDING',
-          paymentStatus: 'PENDING',
+          status: OrderStatus.PENDING,
+          paymentStatus: PaymentStatus.PENDING,
           subtotal,
           tax,
           shippingCost,
@@ -284,7 +285,7 @@ export const initializePayment = async (req: AuthenticatedRequest, res: Response
       where: {
         id: orderId,
         userId,
-        paymentStatus: 'PENDING'
+        paymentStatus: PaymentStatus.PENDING
       },
       include: {
         address: true
@@ -339,7 +340,7 @@ export const initializePayment = async (req: AuthenticatedRequest, res: Response
         orderId: order.id,
         amount: order.total,
         currency: 'RWF',
-        status: 'PENDING',
+        status: PaymentStatus.PENDING,
         paymentMethod,
         transactionRef: paymentData.data.tx_ref,
         flwRef: paymentData.data.flw_ref,
@@ -404,8 +405,8 @@ export const verifyPayment = async (req: AuthenticatedRequest, res: Response) =>
         await tx.order.update({
           where: { id: order.id },
           data: {
-            paymentStatus: 'COMPLETED',
-            status: 'CONFIRMED',
+            paymentStatus: PaymentStatus.COMPLETED,
+            status: OrderStatus.CONFIRMED,
             paymentRef: transactionId
           }
         });
