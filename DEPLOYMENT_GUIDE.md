@@ -48,9 +48,11 @@ iwanyu-2.0/
 
 3. **Configure environment variables in Render:**
    ```
-   DATABASE_URL=your-postgres-connection-string
+   DATABASE_URL=postgresql://neondb_owner:npg_rby0wxG8OuoI@ep-morning-violet-a8o56p2z-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require
    JWT_SECRET=your-jwt-secret
-   FLUTTERWAVE_SECRET_KEY=your-flutterwave-key
+   FLUTTERWAVE_PUBLIC_KEY=FLWPUBK-80beae9a1e1463654d41a8e4d00515dd-X
+   FLUTTERWAVE_SECRET_KEY=FLWSECK-cc842f4c47bf0059d3854bf053c11296-1973d2d141dvt-X
+   FLUTTERWAVE_ENCRYPTION_KEY=cc842f4c47bf3f882628801e
    NODE_ENV=production
    ```
 

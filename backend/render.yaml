@@ -13,22 +13,16 @@ services:
       - key: PORT
         value: 5001
       - key: DATABASE_URL
-        fromDatabase:
-          name: iwanyu-postgres
-          property: connectionString
+        value: postgresql://neondb_owner:npg_rby0wxG8OuoI@ep-morning-violet-a8o56p2z-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require
       - key: JWT_SECRET
         generateValue: true
       - key: FLUTTERWAVE_PUBLIC_KEY
-        sync: false
+        value: FLWPUBK-80beae9a1e1463654d41a8e4d00515dd-X
       - key: FLUTTERWAVE_SECRET_KEY
-        sync: false
+        value: FLWSECK-cc842f4c47bf0059d3854bf053c11296-1973d2d141dvt-X
+      - key: FLUTTERWAVE_ENCRYPTION_KEY
+        value: cc842f4c47bf3f882628801e
       - key: FRONTEND_URL
         value: https://iwanyu.vercel.app
       - key: ALLOWED_ORIGINS
         value: https://iwanyu.vercel.app,https://your-custom-domain.com
-
-databases:
-  - name: iwanyu-postgres
-    databaseName: iwanyu
-    user: iwanyu_user
-    plan: starter
