@@ -1,0 +1,283 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["metrics"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite doesn't support enums, so we use String with @default
+// and comments to document the valid values
+
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  password    String
+  firstName   String
+  lastName    String
+  phone       String?
+  role        String @default("CUSTOMER") // CUSTOMER, VENDOR, ADMIN
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Vendor specific fields
+  vendor      Vendor?
+  
+  // Customer specific fields
+  addresses   Address[]
+  orders      Order[]
+  cartItems   CartItem[]
+  reviews     Review[]
+
+  @@map("users")
+}
+
+model Vendor {
+  id              String         @id @default(uuid())
+  userId          String         @unique
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName    String
+  businessType    String
+  description     String?
+  idDocument      String?        // Path to uploaded ID document
+  documentStatus  String @default("PENDING") // PENDING, APPROVED, REJECTED
+  planType        String @default("FREE")    // FREE, PREMIUM
+  isVerified      Boolean        @default(false)
+  commission      Float          @default(0.05) // 5% commission
+  totalEarnings   Float          @default(0)
+  availableBalance Float         @default(0)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  products        Product[]
+  withdrawals     Withdrawal[]
+
+  @@map("vendors")
+}
+
+model Address {
+  id          String  @id @default(uuid())
+  userId      String
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  street      String
+  city        String
+  state       String
+  zipCode     String
+  country     String  @default("Rwanda")
+  isDefault   Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  orders      Order[]
+
+  @@map("addresses")
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+  image       String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  products    Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id          String        @id @default(uuid())
+  vendorId    String
+  vendor      Vendor        @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  categoryId  String
+  category    Category      @relation(fields: [categoryId], references: [id])
+  name        String
+  description String
+  basePrice   Float
+  status      String @default("PENDING") // PENDING, APPROVED, REJECTED, DISABLED
+  isActive    Boolean       @default(true)
+  sku         String        @unique
+  weight      Float?
+  dimensions  String?   // JSON string for SQLite compatibility
+  tags        String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  images      ProductImage[]
+  variants    ProductVariant[]
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+  reviews     Review[]
+
+  @@map("products")
+}
+
+model ProductImage {
+  id        String  @id @default(uuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  altText   String?
+  order     Int     @default(0)
+  createdAt DateTime @default(now())
+
+  @@map("product_images")
+}
+
+model ProductVariant {
+  id          String  @id @default(uuid())
+  productId   String
+  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name        String  // e.g., "Size: Large, Color: Red"
+  attributes  String    // JSON string: {"size": "Large", "color": "Red"}
+  price       Float
+  stock       Int     @default(0)
+  sku         String  @unique
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+
+  @@map("product_variants")
+}
+
+model CartItem {
+  id        String          @id @default(uuid())
+  userId    String
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantId String?
+  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  quantity  Int
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@unique([userId, productId, variantId])
+  @@map("cart_items")
+}
+
+model Order {
+  id              String        @id @default(uuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id])
+  addressId       String
+  address         Address       @relation(fields: [addressId], references: [id])
+  orderNumber     String        @unique
+  status          String @default("PENDING") // PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+  paymentStatus   String @default("PENDING") // PENDING, COMPLETED, FAILED, REFUNDED
+  subtotal        Float
+  tax             Float         @default(0)
+  shippingCost    Float         @default(0)
+  total           Float
+  paymentRef      String?       // Flutterwave transaction reference
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  items           OrderItem[]
+  payments        Payment[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String          @id @default(uuid())
+  orderId     String
+  order       Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product         @relation(fields: [productId], references: [id])
+  variantId   String?
+  variant     ProductVariant? @relation(fields: [variantId], references: [id])
+  quantity    Int
+  price       Float           // Price at time of order
+  total       Float
+  createdAt   DateTime        @default(now())
+
+  @@map("order_items")
+}
+
+model Payment {
+  id              String        @id @default(uuid())
+  orderId         String
+  order           Order         @relation(fields: [orderId], references: [id])
+  amount          Float
+  currency        String        @default("RWF")
+  status          String @default("PENDING") // PENDING, COMPLETED, FAILED, REFUNDED
+  paymentMethod   String?
+  transactionRef  String?       // Flutterwave transaction reference
+  flwRef          String?       // Flutterwave reference
+  metadata        String?   // JSON string for SQLite compatibility
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@map("payments")
+}
+
+model Withdrawal {
+  id          String   @id @default(uuid())
+  vendorId    String
+  vendor      Vendor   @relation(fields: [vendorId], references: [id])
+  amount      Float
+  currency    String   @default("RWF")
+  status      String   @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
+  bankDetails String    // JSON string for bank details
+  reference   String?  // Flutterwave transfer reference
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("withdrawals")
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  rating    Int      // 1-5 stars
+  comment   String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+  @@map("reviews")
+}
+
+model Banner {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  image       String
+  link        String?
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("banners")
+}
+
+model Analytics {
+  id          String   @id @default(uuid())
+  date        DateTime @default(now())
+  totalSales  Float    @default(0)
+  totalOrders Int      @default(0)
+  newVendors  Int      @default(0)
+  newCustomers Int     @default(0)
+  revenue     Float    @default(0)
+
+  @@unique([date])
+  @@map("analytics")
+}

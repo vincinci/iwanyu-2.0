@@ -1,0 +1,166 @@
+/* Uiverse.io Menu Styles */
+.menu {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  height: 60px;
+  background: linear-gradient(90deg, #ffffff, #f8f9fa);
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 5px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.link {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-weight: 500;
+  color: #6b7280;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  border: 2px solid transparent;
+}
+
+.link-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 6px;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.link-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.link-title {
+  position: absolute;
+  top: 52px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #6b7280;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.link:hover {
+  color: #1f2937;
+  border-color: #e5e7eb;
+  background: #f9fafb;
+  transform: translateY(-2px);
+}
+
+.link:hover .link-icon {
+  color: #1f2937;
+  transform: scale(1.1);
+}
+
+.link:hover .link-title {
+  opacity: 1;
+  visibility: visible;
+  top: 55px;
+}
+
+.link:active {
+  transform: translateY(0);
+}
+
+/* Active state */
+.link.active {
+  color: #111827;
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.link.active .link-icon {
+  color: #111827;
+  transform: scale(1.05);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .menu {
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
+    height: 70px;
+    padding: 10px 15px;
+  }
+  
+  .link {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .link-icon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .link-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .link-title {
+    font-size: 11px;
+    top: 55px;
+  }
+  
+  .link:hover .link-title {
+    top: 58px;
+  }
+}
+
+@media (max-width: 480px) {
+  .menu {
+    height: 65px;
+    padding: 8px 10px;
+    gap: 2px;
+  }
+  
+  .link {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .link-icon {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .link-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .link-title {
+    font-size: 10px;
+    top: 50px;
+  }
+  
+  .link:hover .link-title {
+    top: 53px;
+  }
+}
