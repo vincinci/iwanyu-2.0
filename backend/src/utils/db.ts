@@ -84,7 +84,18 @@ const databaseConfig = DatabaseConfigFactory.createConfig();
 // Validate environment variables before creating Prisma client
 if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
   console.error('❌ DATABASE_URL environment variable is required for production');
-  process.exit(1);
+  console.error('📋 This may be because:');
+  console.error('1. PostgreSQL database service is not linked to the web service');
+  console.error('2. Database is still being created');
+  console.error('3. Environment variable configuration is incorrect');
+  console.error('📍 Current environment variables:');
+  Object.keys(process.env).filter(key => key.includes('DATABASE')).forEach(key => {
+    console.error(`- ${key}: ${process.env[key] ? 'set (hidden)' : 'NOT SET'}`);
+  });
+  
+  // In production, still try to create the client but it will fail on first connection
+  // This allows the service to start and potentially get the DATABASE_URL later
+  console.warn('⚠️ Proceeding anyway - will fail on database operations');
 }
 
 console.log('🔗 Database configuration:', {

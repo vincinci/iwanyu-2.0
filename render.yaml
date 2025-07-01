@@ -1,5 +1,12 @@
 services:
-  # Backend API Service
+  # PostgreSQL Database - Create this first
+  - type: pgsql
+    name: iwanyu-db
+    plan: free
+    databaseName: iwanyu
+    user: iwanyu
+
+  # Backend API Service - References the database above
   - type: web
     name: iwanyu-backend
     env: node
@@ -29,10 +36,3 @@ services:
       - key: FLUTTERWAVE_ENCRYPTION_KEY
         value: cc842f4c47bf3f882628801e
     rootDir: backend
-
-  # PostgreSQL Database
-  - type: pgsql
-    name: iwanyu-db
-    plan: free
-    databaseName: iwanyu
-    user: iwanyu
