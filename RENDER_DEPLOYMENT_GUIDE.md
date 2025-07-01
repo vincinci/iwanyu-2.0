@@ -1,11 +1,14 @@
-# Render Deployment Guide for Iwanyu 2.0
+# Render + Vercel Deployment Guide for Iwanyu 2.0
 
-This guide provides step-by-step instructions for deploying the Iwanyu e-commerce platform on Render.
+This guide provides step-by-step instructions for deploying the Iwanyu e-commerce platform with:
+- **Backend (API):** Render 
+- **Frontend (React):** Vercel
 
 ## 📋 Prerequisites
 
 - [x] GitHub repository with your code pushed
-- [x] Render account (free tier available)
+- [x] Render account (free tier available) - for backend
+- [x] Vercel account (free tier available) - for frontend
 - [x] PostgreSQL database URL (Neon, Supabase, or Render PostgreSQL)
 - [x] Flutterwave API credentials (for payments)
 
@@ -83,11 +86,11 @@ FLUTTERWAVE_PUBLIC_KEY=FLWPUBK_TEST-your-public-key
 FLUTTERWAVE_SECRET_KEY=FLWSECK_TEST-your-secret-key
 FLUTTERWAVE_ENCRYPTION_KEY=FLWSECK_TEST-your-encryption-key
 
-# Frontend URL (update after frontend deployment)
-FRONTEND_URL=https://your-frontend-app.onrender.com
+# Frontend URL (update after Vercel deployment)
+FRONTEND_URL=https://your-frontend-app.vercel.app
 
 # CORS Origins
-CORS_ORIGIN=https://your-frontend-app.onrender.com
+CORS_ORIGIN=https://your-frontend-app.vercel.app
 
 # File Upload
 MAX_FILE_SIZE=5242880
@@ -161,34 +164,37 @@ app.get('/health', (req, res) => {
 });
 ```
 
-## 🌐 Frontend Deployment
+## 🌐 Frontend Deployment (Vercel)
 
-### Step 1: Create Frontend Service
+### Step 1: Create Vercel Project
 
-1. **In Render Dashboard:**
-   - Click "New +" → "Static Site"
-   - Connect your GitHub repository
-   - Select the repository: `iwanyu-2.0`
+1. **Go to Vercel Dashboard:**
+   - Visit [vercel.com](https://vercel.com)
+   - Sign in with GitHub
+   - Click "Add New..." → "Project"
 
-2. **Configure Static Site:**
-   ```
-   Name: iwanyu-frontend
-   Root Directory: iwanyu-frontend
-   Build Command: npm install && npm run build
-   Publish Directory: build
-   ```
+2. **Import Repository:**
+   - Select your GitHub repository: `iwanyu-2.0`
+   - Configure project settings:
+     ```
+     Framework Preset: Create React App
+     Root Directory: iwanyu-frontend
+     Build Command: npm run build
+     Output Directory: build
+     Install Command: npm install
+     ```
 
-### Step 2: Environment Variables
+### Step 2: Environment Variables (Vercel)
 
-Add these environment variables for the frontend:
+Add these environment variables in Vercel project settings:
 
 ```bash
-# API Configuration
+# API Configuration (use your Render backend URL)
 REACT_APP_API_URL=https://iwanyu-backend.onrender.com
 
 # App Configuration
 REACT_APP_APP_NAME=Iwanyu Store
-REACT_APP_APP_URL=https://iwanyu-frontend.onrender.com
+REACT_APP_APP_URL=https://iwanyu-frontend.vercel.app
 
 # Build Configuration
 CI=false
@@ -198,23 +204,54 @@ GENERATE_SOURCEMAP=false
 NODE_OPTIONS=--max-old-space-size=4096
 ```
 
-### Step 3: Build Optimization
+### Step 3: Configure Vercel for SPA
 
-Update `iwanyu-frontend/package.json`:
+Create `iwanyu-frontend/vercel.json`:
+
 ```json
 {
-  "scripts": {
-    "build": "CI=false react-scripts build"
-  }
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ]
 }
 ```
 
-### Step 4: Redirects for SPA
+### Step 4: Deploy Frontend
 
-Create `iwanyu-frontend/public/_redirects`:
-```
-/*    /index.html   200
-```
+1. **Deploy to Vercel:**
+   - Click "Deploy" in Vercel dashboard
+   - Monitor build logs
+   - Get your Vercel URL (e.g., `https://iwanyu-frontend.vercel.app`)
+
+2. **Update Backend CORS:**
+   - Go to Render backend service
+   - Update environment variables:
+     ```
+     FRONTEND_URL=https://iwanyu-frontend.vercel.app
+     CORS_ORIGIN=https://iwanyu-frontend.vercel.app
+     ```
 
 ## 🔧 Backend Configuration Files
 
@@ -440,6 +477,24 @@ For deployment issues:
 - [Prisma Deployment](https://www.prisma.io/docs/guides/deployment)
 - [React Deployment](https://create-react-app.dev/docs/deployment/)
 - [Neon Database](https://neon.tech/docs)
+
+## 🚀 Quick Deployment Summary
+
+### Deployment Architecture
+- **Backend API:** Render (Node.js + PostgreSQL)
+- **Frontend:** Vercel (React Static Site)
+- **Database:** Render PostgreSQL or Neon
+
+### Expected URLs
+- **Backend:** `https://iwanyu-backend.onrender.com`
+- **Frontend:** `https://iwanyu-frontend.vercel.app`
+- **API Health:** `https://iwanyu-backend.onrender.com/health`
+
+### Key Configuration Files
+- `backend/render-build.sh` - Backend build script
+- `render.yaml` - Render infrastructure config
+- `iwanyu-frontend/vercel.json` - Vercel config with security headers
+- `.env.render.template` - Environment variables template
 
 ---
 

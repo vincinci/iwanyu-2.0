@@ -19,9 +19,9 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: FRONTEND_URL
-        value: https://iwanyu-frontend.onrender.com
+        value: https://iwanyu-frontend.vercel.app
       - key: CORS_ORIGIN
-        value: https://iwanyu-frontend.onrender.com
+        value: https://iwanyu-frontend.vercel.app
     rootDir: backend
 
   # PostgreSQL Database
@@ -30,32 +30,3 @@ services:
     plan: free
     databaseName: iwanyu
     user: iwanyu
-
-  # Frontend Static Site
-  - type: web
-    name: iwanyu-frontend
-    env: static
-    buildCommand: npm install && npm run build
-    staticPublishPath: ./build
-    pullRequestPreviewsEnabled: true
-    envVars:
-      - key: REACT_APP_API_URL
-        value: https://iwanyu-backend.onrender.com
-      - key: CI
-        value: false
-      - key: GENERATE_SOURCEMAP
-        value: false
-      - key: NODE_OPTIONS
-        value: --max-old-space-size=4096
-    rootDir: iwanyu-frontend
-    headers:
-      - path: /*
-        name: X-Frame-Options
-        value: DENY
-      - path: /*
-        name: X-Content-Type-Options
-        value: nosniff
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
