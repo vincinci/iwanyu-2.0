@@ -3,17 +3,19 @@ services:
   - type: web
     name: iwanyu-backend
     env: node
-    buildCommand: npm install && npm run db:generate && npm run build
-    startCommand: npm run db:migrate && npm start
-    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: npx prisma generate && npx prisma migrate deploy && npm start
+    plan: free
     numInstances: 1
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: 5001
+        value: 10000
       - key: DATABASE_URL
-        value: postgresql://neondb_owner:npg_rby0wxG8OuoI@ep-morning-violet-a8o56p2z-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require
+        fromDatabase:
+          name: iwanyu-db
+          property: connectionString
       - key: JWT_SECRET
         generateValue: true
       - key: FLUTTERWAVE_PUBLIC_KEY
@@ -23,6 +25,13 @@ services:
       - key: FLUTTERWAVE_ENCRYPTION_KEY
         value: cc842f4c47bf3f882628801e
       - key: FRONTEND_URL
-        value: https://iwanyu.vercel.app
+        value: https://iwanyu-2-0.vercel.app
       - key: ALLOWED_ORIGINS
-        value: https://iwanyu.vercel.app,https://your-custom-domain.com
+        value: https://iwanyu-2-0.vercel.app
+
+  # PostgreSQL Database
+  - type: pgsql
+    name: iwanyu-db
+    plan: free
+    databaseName: iwanyu
+    user: iwanyu

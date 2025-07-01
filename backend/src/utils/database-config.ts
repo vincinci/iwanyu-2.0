@@ -7,6 +7,11 @@ export class DatabaseConfigFactory {
       errorFormat: 'pretty',
     };
 
+    // Validate DATABASE_URL for production
+    if (environment === 'production' && !process.env.DATABASE_URL) {
+      throw new Error('DATABASE_URL environment variable is required for production');
+    }
+
     switch (environment) {
       case 'production':
         return {
@@ -18,7 +23,7 @@ export class DatabaseConfigFactory {
           // Production connection settings for PostgreSQL
           datasources: {
             db: {
-              url: process.env.DATABASE_URL
+              url: process.env.DATABASE_URL!
             }
           }
         };

@@ -42,6 +42,31 @@ import {
 
 dotenv.config();
 
+// Validate critical environment variables
+function validateEnvironment() {
+  const requiredEnvVars = ['DATABASE_URL'];
+  const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+  
+  if (missingVars.length > 0) {
+    console.error('❌ Missing required environment variables:', missingVars);
+    console.error('📋 Current environment variables:');
+    console.error('- NODE_ENV:', process.env.NODE_ENV || 'not set');
+    console.error('- PORT:', process.env.PORT || 'not set');
+    console.error('- DATABASE_URL:', process.env.DATABASE_URL ? 'set (hidden)' : 'NOT SET');
+    console.error('- JWT_SECRET:', process.env.JWT_SECRET ? 'set (hidden)' : 'NOT SET');
+    
+    if (process.env.NODE_ENV === 'production') {
+      console.error('💥 Cannot start in production without required environment variables');
+      process.exit(1);
+    } else {
+      console.warn('⚠️ Warning: Missing environment variables in development mode');
+    }
+  }
+}
+
+// Validate environment before starting
+validateEnvironment();
+
 const app = express();
 const PORT = process.env.PORT || 5001;
 

@@ -12,8 +12,12 @@
     "postbuild": "cp -r uploads dist/ || true",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
+    "db:migrate:dev": "prisma migrate dev",
     "db:seed": "node --import tsx/esm prisma/seed.ts",
     "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset --force",
+    "render:build": "npm ci && npx prisma generate && npm run build",
+    "render:start": "npx prisma migrate deploy && npm start",
     "test": "jest",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix"
@@ -35,7 +39,10 @@
     "jsonwebtoken": "^9.0.0",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "typescript": "^5.0.0",
+    "prisma": "^5.0.0",
+    "@types/node": "^24.0.10"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -46,16 +53,13 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/multer": "^1.4.13",
-    "@types/node": "^24.0.10",
     "@typescript-eslint/eslint-plugin": "^5.59.0",
     "@typescript-eslint/parser": "^5.59.0",
     "eslint": "^8.40.0",
     "jest": "^29.5.0",
     "nodemon": "^3.1.10",
-    "prisma": "^5.0.0",
     "ts-node": "^10.9.2",
-    "tsx": "^3.12.0",
-    "typescript": "^5.0.0"
+    "tsx": "^3.12.0"
   },
   "engines": {
     "node": ">=18.0.0"

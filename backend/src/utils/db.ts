@@ -81,6 +81,18 @@ class DatabaseManager extends EventEmitter {
 // Database configuration with enhanced options using factory
 const databaseConfig = DatabaseConfigFactory.createConfig();
 
+// Validate environment variables before creating Prisma client
+if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+  console.error('❌ DATABASE_URL environment variable is required for production');
+  process.exit(1);
+}
+
+console.log('🔗 Database configuration:', {
+  environment: process.env.NODE_ENV,
+  hasDbUrl: !!process.env.DATABASE_URL,
+  dbType: DatabaseConfigFactory.getDatabaseType()
+});
+
 // Create singleton Prisma instance with enhanced logging
 export const prisma = globalThis.__prisma ?? new PrismaClient(databaseConfig);
 

@@ -2,7 +2,15 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 import { UserRole } from '../types/enums';
-import { AuthenticatedRequest } from '../types/express';
+
+// Define the AuthenticatedRequest interface locally since we're having import issues
+interface AuthenticatedRequest extends Request {
+  user?: {
+    id: string;
+    email: string;
+    role: UserRole;
+  };
+}
 
 const prisma = new PrismaClient();
 
