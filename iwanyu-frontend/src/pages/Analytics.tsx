@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { 
   TrendingUp, 
   Users, 
-  
+  Store,
   Package, 
   DollarSign,
   BarChart3,
   Calendar,
-  AlertCircle
+  AlertCircle,
+  ShoppingCart
 } from 'lucide-react';
 import Header from '../components/layout/Header';
 import apiService from '../services/api';
