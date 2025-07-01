@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { prisma, withTransaction } from '../utils/db';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { FlutterwaveService } from '../services/flutterwave';
-import { OrderStatus, PaymentStatus } from '@prisma/client';
+import { OrderStatus, PaymentStatus } from '../types/enums';
 
 interface OrderItem {
   productId: string;

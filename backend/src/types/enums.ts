@@ -1,56 +1,67 @@
-// Type definitions for SQLite-compatible enums
+// Enum definitions for SQLite-compatible enums
 // These replace the Prisma enums that aren't supported in SQLite
 
-export type UserRole = 'CUSTOMER' | 'VENDOR' | 'ADMIN';
+export enum UserRole {
+  CUSTOMER = 'CUSTOMER',
+  VENDOR = 'VENDOR',
+  ADMIN = 'ADMIN'
+}
 
-export type OrderStatus = 
-  | 'PENDING' 
-  | 'CONFIRMED' 
-  | 'PROCESSING' 
-  | 'SHIPPED' 
-  | 'DELIVERED' 
-  | 'CANCELLED';
+export enum OrderStatus {
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  PROCESSING = 'PROCESSING',
+  SHIPPED = 'SHIPPED',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED'
+}
 
-export type PaymentStatus = 
-  | 'PENDING' 
-  | 'COMPLETED' 
-  | 'FAILED' 
-  | 'REFUNDED';
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+  REFUNDED = 'REFUNDED'
+}
 
-export type DocumentStatus = 
-  | 'PENDING' 
-  | 'APPROVED' 
-  | 'REJECTED';
+export enum DocumentStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED'
+}
 
-export type ProductStatus = 
-  | 'PENDING' 
-  | 'APPROVED' 
-  | 'REJECTED' 
-  | 'DISABLED';
+export enum ProductStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  DISABLED = 'DISABLED'
+}
 
-export type PlanType = 'FREE' | 'PREMIUM';
+export enum PlanType {
+  FREE = 'FREE',
+  PREMIUM = 'PREMIUM'
+}
 
 // Helper functions for validation
 export const isValidUserRole = (role: string): role is UserRole => {
-  return ['CUSTOMER', 'VENDOR', 'ADMIN'].includes(role);
+  return Object.values(UserRole).includes(role as UserRole);
 };
 
 export const isValidOrderStatus = (status: string): status is OrderStatus => {
-  return ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'].includes(status);
+  return Object.values(OrderStatus).includes(status as OrderStatus);
 };
 
 export const isValidPaymentStatus = (status: string): status is PaymentStatus => {
-  return ['PENDING', 'COMPLETED', 'FAILED', 'REFUNDED'].includes(status);
+  return Object.values(PaymentStatus).includes(status as PaymentStatus);
 };
 
 export const isValidDocumentStatus = (status: string): status is DocumentStatus => {
-  return ['PENDING', 'APPROVED', 'REJECTED'].includes(status);
+  return Object.values(DocumentStatus).includes(status as DocumentStatus);
 };
 
 export const isValidProductStatus = (status: string): status is ProductStatus => {
-  return ['PENDING', 'APPROVED', 'REJECTED', 'DISABLED'].includes(status);
+  return Object.values(ProductStatus).includes(status as ProductStatus);
 };
 
 export const isValidPlanType = (type: string): type is PlanType => {
-  return ['FREE', 'PREMIUM'].includes(type);
+  return Object.values(PlanType).includes(type as PlanType);
 };

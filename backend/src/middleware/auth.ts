@@ -2,16 +2,11 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 import { UserRole } from '../types/enums';
+import { AuthenticatedRequest } from '../types/express';
 
 const prisma = new PrismaClient();
 
-export interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    email: string;
-    role: UserRole;
-  };
-}
+export { AuthenticatedRequest };
 
 export const authenticate = async (
   req: AuthenticatedRequest,

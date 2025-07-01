@@ -12,6 +12,7 @@ import {
 } from '../controllers/vendors';
 import { authenticate, authorize } from '../middleware/auth';
 import { validate } from '../middleware/validate';
+import { UserRole } from '../types/enums';
 
 const router = express.Router();
 
@@ -28,27 +29,27 @@ router.post('/register',
 );
 
 // Vendor profile
-router.get('/profile', authenticate, authorize('VENDOR'), getVendorProfile);
-router.put('/profile', authenticate, authorize('VENDOR'), updateVendorProfile);
+router.get('/profile', authenticate, authorize(UserRole.VENDOR), getVendorProfile);
+router.put('/profile', authenticate, authorize(UserRole.VENDOR), updateVendorProfile);
 
 // ID Document upload
 router.post('/upload-id', 
   authenticate, 
-  authorize('VENDOR'), 
+  authorize(UserRole.VENDOR), 
   uploadDocument.single('document'),
   uploadIdDocument
 );
 
 // Vendor products
-router.get('/products', authenticate, authorize('VENDOR'), getVendorProducts);
+router.get('/products', authenticate, authorize(UserRole.VENDOR), getVendorProducts);
 
 // Vendor analytics
-router.get('/analytics', authenticate, authorize('VENDOR'), getVendorAnalytics);
+router.get('/analytics', authenticate, authorize(UserRole.VENDOR), getVendorAnalytics);
 
 // Withdrawals
 router.post('/withdraw', 
   authenticate, 
-  authorize('VENDOR'),
+  authorize(UserRole.VENDOR),
   [
     body('amount').isNumeric().isFloat({ min: 1000 }), // Minimum 1000 RWF
     body('bankDetails').isObject()

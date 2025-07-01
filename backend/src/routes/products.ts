@@ -11,6 +11,7 @@ import {
 } from '../controllers/products';
 import { authenticate, authorize } from '../middleware/auth';
 import { validate } from '../middleware/validate';
+import { UserRole } from '../types/enums';
 
 const router = express.Router();
 
@@ -22,7 +23,7 @@ router.get('/:id', getProduct);
 // Protected routes (vendor only)
 router.post('/',
   authenticate,
-  authorize('VENDOR'),
+  authorize(UserRole.VENDOR),
   upload.array('images', 10), // Allow up to 10 images
   [
     body('name').notEmpty().trim().withMessage('Product name is required'),
@@ -36,26 +37,26 @@ router.post('/',
 
 router.put('/:id',
   authenticate,
-  authorize('VENDOR'),
+  authorize(UserRole.VENDOR),
   updateProduct
 );
 
 router.delete('/:id',
   authenticate,
-  authorize('VENDOR', 'ADMIN'),
+  authorize(UserRole.VENDOR, UserRole.ADMIN),
   deleteProduct
 );
 
 // Admin-only routes for product management
 router.get('/admin/all',
   authenticate,
-  authorize('ADMIN'),
+  authorize(UserRole.ADMIN),
   getProducts
 );
 
 router.post('/admin/create',
   authenticate,
-  authorize('ADMIN'),
+  authorize(UserRole.ADMIN),
   upload.array('images', 10),
   [
     body('name').notEmpty().trim().withMessage('Product name is required'),
@@ -69,13 +70,13 @@ router.post('/admin/create',
 
 router.put('/admin/:id',
   authenticate,
-  authorize('ADMIN'),
+  authorize(UserRole.ADMIN),
   updateProduct
 );
 
 router.delete('/admin/:id',
   authenticate,
-  authorize('ADMIN'),
+  authorize(UserRole.ADMIN),
   deleteProduct
 );
 

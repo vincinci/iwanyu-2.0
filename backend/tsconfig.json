@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "lib": ["ES2020"],
+    "lib": ["ES2020", "DOM"],
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "./dist",
@@ -16,10 +16,12 @@
     "experimentalDecorators": true,
     "sourceMap": true,
     "incremental": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "types": ["node"]
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "src/types/**/*"
   ],
   "exclude": [
     "node_modules",
