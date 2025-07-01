@@ -46,7 +46,7 @@
     }
   ],
   "env": {
-    "REACT_APP_API_URL": "https://iwanyu-backend.onrender.com",
+    "REACT_APP_API_URL": "https://iwanyu-2-0-backend.onrender.com",
     "REACT_APP_APP_NAME": "Iwanyu Store",
     "CI": "false",
     "GENERATE_SOURCEMAP": "false"

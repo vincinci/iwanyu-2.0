@@ -19,9 +19,9 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: FRONTEND_URL
-        value: https://iwanyu-frontend.vercel.app
+        value: https://iwanyu-2-0.vercel.app
       - key: CORS_ORIGIN
-        value: https://iwanyu-frontend.vercel.app
+        value: https://iwanyu-2-0.vercel.app
     rootDir: backend
 
   # PostgreSQL Database

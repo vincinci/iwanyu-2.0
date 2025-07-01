@@ -190,7 +190,7 @@ Add these environment variables in Vercel project settings:
 
 ```bash
 # API Configuration (use your Render backend URL)
-REACT_APP_API_URL=https://iwanyu-backend.onrender.com
+REACT_APP_API_URL=https://iwanyu-2-0-backend.onrender.com
 
 # App Configuration
 REACT_APP_APP_NAME=Iwanyu Store
@@ -486,9 +486,9 @@ For deployment issues:
 - **Database:** Render PostgreSQL or Neon
 
 ### Expected URLs
-- **Backend:** `https://iwanyu-backend.onrender.com`
-- **Frontend:** `https://iwanyu-frontend.vercel.app`
-- **API Health:** `https://iwanyu-backend.onrender.com/health`
+- **Backend:** `https://iwanyu-2-0-backend.onrender.com`
+- **Frontend:** `https://iwanyu-2-0.vercel.app`
+- **API Health:** `https://iwanyu-2-0-backend.onrender.com/health`
 
 ### Key Configuration Files
 - `backend/render-build.sh` - Backend build script
