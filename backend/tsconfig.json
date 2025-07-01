@@ -16,8 +16,7 @@
     "experimentalDecorators": true,
     "sourceMap": true,
     "incremental": true,
-    "allowSyntheticDefaultImports": true,
-    "types": ["node"]
+    "allowSyntheticDefaultImports": true
   },
   "include": [
     "src/**/*",
