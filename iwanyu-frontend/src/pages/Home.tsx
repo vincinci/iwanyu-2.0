@@ -21,6 +21,8 @@ import ProductCard from '../components/ui/ProductCard';
 import { Product, Category } from '../types';
 import apiService from '../services/api';
 
+// Updated: July 3, 2025 - Fixed text contrast with dark hero background
+
 const Home: React.FC = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
