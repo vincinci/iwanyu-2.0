@@ -25,11 +25,11 @@ const router = express.Router();
 
 // Debug route to test admin routes are working
 router.get('/test', (req, res) => {
-  console.log('🔧 Admin test route called');
+  console.log('🔧 Admin test route called - v3');
   res.json({ 
-    message: 'Admin routes are working - v2', 
+    message: 'Admin routes are working - v3', 
     timestamp: new Date().toISOString(),
-    deployment: 'Latest version'
+    deployment: 'Latest version - v3'
   });
 });
 
