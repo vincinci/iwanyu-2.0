@@ -111,24 +111,60 @@ const Home: React.FC = () => {
 
   return (
     <Layout>
-      {/* Simple Hero Section - matching iwanyu.store */}
-      <section className="bg-gradient-to-br from-gray-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Modern Hero Section with Better Text Contrast */}
+      <section className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-black overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-72 h-72 bg-yellow-500 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
+        </div>
+        
+        {/* Content */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center">
             <div className="mb-8">
-              <div className="w-full h-64 bg-gradient-to-br from-white to-gray-50 rounded-lg flex items-center justify-center mb-6 border border-gray-200 shadow-sm">
-                <div className="text-center">
-                  <h1 className="text-4xl font-light text-gray-800 mb-4">iwanyu stores</h1>
-                  <p className="text-gray-600 mb-6">Welcome to our store</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-center">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
+                Special <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">Deals</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-200 mb-2">Up to 70% Off</p>
+              <p className="text-lg text-gray-300 max-w-2xl mx-auto mb-8">
+                Don't miss our incredible deals on top-rated products. Limited time offers from your favorite vendors.
+              </p>
+              
+              {/* CTA Button with High Contrast */}
               <Link to="/products">
-                <Button variant="primary" size="lg" className="px-8 py-3 font-medium">
-                  Shop Now
+                <Button 
+                  variant="primary" 
+                  size="lg" 
+                  className="px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                >
+                  View Deals
                 </Button>
               </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Section with High Contrast */}
+        <div className="relative bg-black bg-opacity-50 backdrop-blur-sm py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              <div>
+                <div className="text-3xl md:text-4xl font-bold text-white mb-2">10K+</div>
+                <div className="text-gray-300 font-medium">Active Vendors</div>
+              </div>
+              <div>
+                <div className="text-3xl md:text-4xl font-bold text-white mb-2">500K+</div>
+                <div className="text-gray-300 font-medium">Products</div>
+              </div>
+              <div>
+                <div className="text-3xl md:text-4xl font-bold text-white mb-2">1M+</div>
+                <div className="text-gray-300 font-medium">Happy Customers</div>
+              </div>
+              <div>
+                <div className="text-3xl md:text-4xl font-bold text-white mb-2">99.9%</div>
+                <div className="text-gray-300 font-medium">Uptime</div>
+              </div>
             </div>
           </div>
         </div>
