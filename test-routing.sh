@@ -5,7 +5,7 @@
 
 BASE_URL="https://iwanyu-backend.onrender.com"
 if [ "$1" = "local" ]; then
-    BASE_URL="http://localhost:5000"
+    BASE_URL="http://localhost:3001"
 fi
 
 echo "🧪 Testing Backend API Routes at $BASE_URL"

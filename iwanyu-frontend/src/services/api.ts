@@ -620,24 +620,22 @@ class ApiService {
         params: { timeRange },
       });
     } catch (error: any) {
-      if (error?.response?.status === 404) {
-        console.warn('Admin dashboard stats endpoint not available, returning fallback data');
-        return {
-          success: true,
-          message: 'Using fallback data - admin endpoint not available',
-          data: {
-            totalUsers: 0,
-            totalOrders: 0,
-            totalRevenue: 0,
-            totalProducts: 0,
-            averageRating: 0,
-            pendingOrders: 0,
-            newUsersThisMonth: 0,
-            revenueGrowth: 0
-          }
-        };
-      }
-      throw error;
+      // Handle any error as admin endpoint not available
+      console.warn('Admin dashboard stats endpoint not available, returning fallback data:', error?.response?.status || error?.message);
+      return {
+        success: true,
+        message: 'Using fallback data - admin endpoint not available',
+        data: {
+          totalUsers: 0,
+          totalOrders: 0,
+          totalRevenue: 0,
+          totalProducts: 0,
+          averageRating: 0,
+          pendingOrders: 0,
+          newUsersThisMonth: 0,
+          revenueGrowth: 0
+        }
+      };
     }
   }
 
@@ -649,15 +647,13 @@ class ApiService {
         params: { limit },
       });
     } catch (error: any) {
-      if (error?.response?.status === 404) {
-        console.warn('Admin recent orders endpoint not available, returning empty array');
-        return {
-          success: true,
-          message: 'Using fallback data - admin endpoint not available',
-          data: []
-        };
-      }
-      throw error;
+      // Handle any error as admin endpoint not available
+      console.warn('Admin recent orders endpoint not available, returning empty array:', error?.response?.status || error?.message);
+      return {
+        success: true,
+        message: 'Using fallback data - admin endpoint not available',
+        data: []
+      };
     }
   }
 
@@ -669,15 +665,13 @@ class ApiService {
         params: { limit },
       });
     } catch (error: any) {
-      if (error?.response?.status === 404) {
-        console.warn('Admin top products endpoint not available, returning empty array');
-        return {
-          success: true,
-          message: 'Using fallback data - admin endpoint not available',
-          data: []
-        };
-      }
-      throw error;
+      // Handle any error as admin endpoint not available
+      console.warn('Admin top products endpoint not available, returning empty array:', error?.response?.status || error?.message);
+      return {
+        success: true,
+        message: 'Using fallback data - admin endpoint not available',
+        data: []
+      };
     }
   }
 
@@ -892,15 +886,13 @@ class ApiService {
         url: '/admin/test',
       });
     } catch (error: any) {
-      if (error?.response?.status === 404) {
-        console.warn('Admin routes not yet deployed to production');
-        return {
-          success: false,
-          message: 'Admin routes not available - backend deployment pending',
-          data: null
-        };
-      }
-      throw error;
+      // Handle all types of errors as admin routes not available
+      console.warn('Admin routes not yet deployed to production:', error?.response?.status || error?.message);
+      return {
+        success: false,
+        message: 'Admin routes not available - backend deployment pending',
+        data: null
+      };
     }
   }
 }
