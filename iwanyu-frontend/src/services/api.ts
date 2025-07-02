@@ -29,9 +29,9 @@ class ApiService {
   // Health check and backend warmup
   async healthCheck(): Promise<boolean> {
     try {
-      const response = await this.api({
-        method: 'GET',
-        url: '/health',
+      // Health endpoint is at /health (not /api/health), so use full URL
+      const healthUrl = this.baseURL.replace('/api', '') + '/health';
+      const response = await axios.get(healthUrl, {
         timeout: 30000, // 30 second timeout for health check
       });
       return response.status === 200;
