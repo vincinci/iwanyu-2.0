@@ -33,7 +33,6 @@ import checkoutRoutes from './routes/checkout';
 
 // Import middleware
 import { errorHandler } from './middleware/errorHandler';
-import { notFound } from './middleware/notFound';
 import { 
   databasePerformanceMonitor, 
   checkConnectionPool,
@@ -166,8 +165,48 @@ app.use('/api/admin', requireDatabaseConnection, adminRoutes);
 app.use('/api/analytics', requireDatabaseConnection, analyticsRoutes);
 app.use('/api/import', requireDatabaseConnection, importRoutes);
 
+// Catch-all for frontend routes - redirect to frontend domain
+// This handles cases where users directly visit /login, /dashboard, etc.
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://iwanyu-frontend.vercel.app';
+
+app.get('*', (req, res) => {
+  // Check if this looks like a frontend route (not an API route)
+  if (!req.path.startsWith('/api') && !req.path.startsWith('/health')) {
+    // Common frontend routes that should be redirected
+    const frontendRoutes = [
+      '/login', '/register', '/dashboard', '/profile', '/cart', '/checkout',
+      '/products', '/collections', '/search', '/orders', '/wishlist',
+      '/vendor', '/admin', '/about', '/contact', '/become-vendor',
+      '/payment-methods', '/security', '/forgot-password'
+    ];
+    
+    // Check if this is a frontend route or starts with one
+    const isFrontendRoute = frontendRoutes.some(route => 
+      req.path === route || req.path.startsWith(route + '/')
+    );
+    
+    if (isFrontendRoute || req.path === '/') {
+      // Redirect to frontend with the same path and query string
+      const queryString = Object.keys(req.query).length > 0 ? '?' + new URLSearchParams(req.query as any).toString() : '';
+      const redirectUrl = `${FRONTEND_URL}${req.path}${queryString}`;
+      console.log(`🔄 Redirecting frontend route ${req.path} to ${redirectUrl}`);
+      return res.redirect(302, redirectUrl);
+    }
+  }
+  
+  // If not a frontend route, continue to notFound middleware
+  res.status(404).json({
+    success: false,
+    error: 'Not Found',
+    message: `The requested resource ${req.originalUrl} was not found on this server. This is an API server - visit ${FRONTEND_URL} for the web application.`,
+    path: req.originalUrl,
+    method: req.method,
+    timestamp: new Date().toISOString(),
+    frontendUrl: FRONTEND_URL
+  });
+});
+
 // Error handling middleware
-app.use(notFound);
 app.use(errorHandler);
 
 // Initialize server with enhanced database connection
