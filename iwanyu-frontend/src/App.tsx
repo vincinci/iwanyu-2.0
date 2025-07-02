@@ -28,6 +28,7 @@ import Analytics from './pages/Analytics';
 import PaymentMethods from './pages/PaymentMethods';
 import Security from './pages/Security';
 import AddProduct from './pages/AddProduct';
+import { BackendStatusIndicator } from './components/BackendStatusIndicator';
 import './App.css';
 
 function App() {
@@ -36,6 +37,10 @@ function App() {
       <AdminRefreshProvider>
         <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <div className="App">
+            {/* Backend status indicator - shows when there are connection issues */}
+            <div className="fixed top-0 left-0 right-0 z-50 p-4">
+              <BackendStatusIndicator className="max-w-4xl mx-auto" />
+            </div>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />

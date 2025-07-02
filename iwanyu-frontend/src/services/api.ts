@@ -14,13 +14,50 @@ class ApiService {
     console.log('🔗 API Service initialized with baseURL:', this.baseURL);
     this.api = axios.create({
       baseURL: this.baseURL,
-      timeout: 30000, // Increase timeout to 30 seconds
+      timeout: 180000, // Increase timeout to 3 minutes for Render cold starts
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
     this.setupInterceptors();
+    
+    // Optionally warm up the backend on initialization
+    this.warmupBackend();
+  }
+
+  // Health check and backend warmup
+  async healthCheck(): Promise<boolean> {
+    try {
+      const response = await this.api({
+        method: 'GET',
+        url: '/health',
+        timeout: 30000, // 30 second timeout for health check
+      });
+      return response.status === 200;
+    } catch (error) {
+      console.warn('Backend health check failed:', error);
+      return false;
+    }
+  }
+
+  // Warm up the backend in the background to reduce cold starts
+  private async warmupBackend(): Promise<void> {
+    try {
+      // Don't block initialization, run in background
+      setTimeout(async () => {
+        console.log('🔥 Warming up backend...');
+        const isHealthy = await this.healthCheck();
+        if (isHealthy) {
+          console.log('✅ Backend is warm and ready');
+        } else {
+          console.log('⚠️ Backend warmup failed, may experience cold start delays');
+        }
+      }, 1000); // Wait 1 second after initialization
+    } catch (error) {
+      // Silently fail warmup, don't affect user experience
+      console.warn('Backend warmup error:', error);
+    }
   }
 
   private setupInterceptors() {
@@ -53,24 +90,79 @@ class ApiService {
     );
   }
 
-  // Generic request method
+  // Generic request method with cold start handling
   private async request<T>(config: AxiosRequestConfig): Promise<ApiResponse<T>> {
     try {
       const response = await this.api(config);
       return response.data;
     } catch (error: any) {
+      // Handle Render cold start timeouts
+      if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        console.warn('⚠️ Backend cold start detected. This may take a few minutes on first load.');
+        throw new Error('Backend is starting up (cold start). Please wait a moment and try again.');
+      }
+      
       const message = error.response?.data?.message || error.message || 'An error occurred';
       throw new Error(message);
     }
   }
 
-  // Auth methods
+  // Special request method for critical operations with retry logic
+  private async requestWithRetry<T>(config: AxiosRequestConfig, maxRetries = 2): Promise<ApiResponse<T>> {
+    let lastError;
+    
+    for (let attempt = 1; attempt <= maxRetries + 1; attempt++) {
+      try {
+        if (attempt > 1) {
+          console.log(`🔄 Retry attempt ${attempt - 1}/${maxRetries} for ${config.url}`);
+          // Wait before retry (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt - 1) * 1000));
+        }
+        
+        const response = await this.api({
+          ...config,
+          timeout: attempt === 1 ? 180000 : 240000, // Longer timeout for retries (4 minutes)
+        });
+        return response.data;
+      } catch (error: any) {
+        lastError = error;
+        
+        // Don't retry on authentication errors or client errors
+        if (error.response?.status >= 400 && error.response?.status < 500) {
+          break;
+        }
+        
+        // Retry on network errors or timeouts
+        if (attempt <= maxRetries && (
+          error.code === 'ECONNABORTED' || 
+          error.message?.includes('timeout') ||
+          error.message?.includes('Network Error')
+        )) {
+          console.warn(`⚠️ Request failed (attempt ${attempt}). Retrying...`);
+          continue;
+        }
+        
+        break;
+      }
+    }
+    
+    // If we get here, all retries failed
+    if (lastError?.code === 'ECONNABORTED' || lastError?.message?.includes('timeout')) {
+      throw new Error('Backend is taking longer than expected to respond. This might be due to a cold start. Please try again in a few minutes.');
+    }
+    
+    const message = lastError?.response?.data?.message || lastError?.message || 'Request failed after retries';
+    throw new Error(message);
+  }
+
+  // Auth methods with retry logic
   async login(email: string, password: string): Promise<ApiResponse<AuthResponse>> {
     try {
       const response = await this.api({
         method: 'POST',
         url: '/auth/login',
         data: { email, password },
+        timeout: 180000, // 3 minute timeout for authentication
       });
       
       // Backend returns {message, user, token} directly
@@ -84,6 +176,11 @@ class ApiService {
         }
       };
     } catch (error: any) {
+      // Provide helpful error messages for authentication
+      if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        throw new Error('Login is taking longer than expected. The backend may be starting up (cold start). Please wait a moment and try again.');
+      }
+      
       const message = error.response?.data?.message || error.message || 'Login failed';
       throw new Error(message);
     }
@@ -102,6 +199,7 @@ class ApiService {
         method: 'POST',
         url: '/auth/register',
         data: userData,
+        timeout: 180000, // 3 minute timeout for registration
       });
       
       // Backend returns {message, user, token} directly
@@ -115,6 +213,11 @@ class ApiService {
         }
       };
     } catch (error: any) {
+      // Provide helpful error messages for registration
+      if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        throw new Error('Registration is taking longer than expected. The backend may be starting up (cold start). Please wait a moment and try again.');
+      }
+      
       const message = error.response?.data?.message || error.message || 'Registration failed';
       throw new Error(message);
     }
@@ -190,20 +293,20 @@ class ApiService {
     });
   }
 
-  // Products methods
+  // Products methods - using retry logic for critical data loading
   async getProducts(params?: any): Promise<ApiResponse<any>> {
-    return this.request({
+    return this.requestWithRetry({
       method: 'GET',
       url: '/products',
       params,
-    });
+    }, 3); // 3 retries for critical product data
   }
 
   async getProduct(id: string): Promise<ApiResponse<any>> {
-    return this.request({
+    return this.requestWithRetry({
       method: 'GET',
       url: `/products/${id}`,
-    });
+    }, 2); // 2 retries for individual product data
   }
 
   async createProduct(data: FormData): Promise<ApiResponse<any>> {
@@ -235,12 +338,12 @@ class ApiService {
     });
   }
 
-  // Categories methods
+  // Categories methods - using retry logic for critical data loading
   async getCategories(): Promise<ApiResponse<any>> {
-    return this.request({
+    return this.requestWithRetry({
       method: 'GET',
       url: '/categories',
-    });
+    }, 3); // 3 retries for critical category data
   }
 
   // Vendors methods
@@ -336,12 +439,12 @@ class ApiService {
     });
   }
 
-  // Cart methods
+  // Cart methods - using retry logic for cart operations
   async getCart(): Promise<ApiResponse<any>> {
-    return this.request({
+    return this.requestWithRetry({
       method: 'GET',
       url: '/cart',
-    });
+    }, 2); // 2 retries for cart data
   }
 
   async addToCart(data: {
@@ -349,11 +452,11 @@ class ApiService {
     quantity: number;
     variantId?: string;
   }): Promise<ApiResponse<any>> {
-    return this.request({
+    return this.requestWithRetry({
       method: 'POST',
       url: '/cart/add',
       data,
-    });
+    }, 1); // 1 retry for add to cart
   }
 
   async updateCartItem(itemId: string, quantity: number): Promise<ApiResponse<any>> {
