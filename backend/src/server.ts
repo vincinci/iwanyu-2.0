@@ -164,8 +164,12 @@ app.use('/api/upload', uploadRoutes);
 
 // Debug: Log when admin routes are being mounted
 console.log('🔧 Mounting admin routes...');
-app.use('/api/admin', requireDatabaseConnection, adminRoutes);
-console.log('✅ Admin routes mounted successfully');
+try {
+  app.use('/api/admin', adminRoutes); // Remove database middleware temporarily for debugging
+  console.log('✅ Admin routes mounted successfully');
+} catch (error) {
+  console.error('❌ Failed to mount admin routes:', error);
+}
 
 app.use('/api/analytics', requireDatabaseConnection, analyticsRoutes);
 app.use('/api/import', requireDatabaseConnection, importRoutes);
