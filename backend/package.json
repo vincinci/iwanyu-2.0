@@ -1,6 +1,6 @@
 {
   "name": "iwanyu-backend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Iwanyu E-commerce Backend API",
   "main": "dist/server.js",
   "scripts": {

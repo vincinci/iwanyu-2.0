@@ -170,9 +170,11 @@ app.get('/api/health', async (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     message: 'Iwanyu E-commerce API',
-    version: '1.0.0',
+    version: '1.0.1',
     status: 'running',
     timestamp: new Date().toISOString(),
+    deploymentVersion: '1.0.1',
+    lastUpdated: '2025-07-02T14:55:00Z',
     endpoints: {
       health: '/api/health',
       auth: {

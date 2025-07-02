@@ -611,29 +611,74 @@ class ApiService {
     });
   }
 
-  // Admin methods
+  // Admin methods with fallback handling
   async getDashboardStats(timeRange: string = '7d'): Promise<ApiResponse<any>> {
-    return this.request({
-      method: 'GET',
-      url: '/admin/dashboard/stats',
-      params: { timeRange },
-    });
+    try {
+      return await this.request({
+        method: 'GET',
+        url: '/admin/dashboard/stats',
+        params: { timeRange },
+      });
+    } catch (error: any) {
+      if (error?.response?.status === 404) {
+        console.warn('Admin dashboard stats endpoint not available, returning fallback data');
+        return {
+          success: true,
+          message: 'Using fallback data - admin endpoint not available',
+          data: {
+            totalUsers: 0,
+            totalOrders: 0,
+            totalRevenue: 0,
+            totalProducts: 0,
+            averageRating: 0,
+            pendingOrders: 0,
+            newUsersThisMonth: 0,
+            revenueGrowth: 0
+          }
+        };
+      }
+      throw error;
+    }
   }
 
   async getRecentOrders(limit: number = 10): Promise<ApiResponse<any>> {
-    return this.request({
-      method: 'GET',
-      url: '/admin/dashboard/recent-orders',
-      params: { limit },
-    });
+    try {
+      return await this.request({
+        method: 'GET',
+        url: '/admin/dashboard/recent-orders',
+        params: { limit },
+      });
+    } catch (error: any) {
+      if (error?.response?.status === 404) {
+        console.warn('Admin recent orders endpoint not available, returning empty array');
+        return {
+          success: true,
+          message: 'Using fallback data - admin endpoint not available',
+          data: []
+        };
+      }
+      throw error;
+    }
   }
 
   async getTopProducts(limit: number = 10): Promise<ApiResponse<any>> {
-    return this.request({
-      method: 'GET',
-      url: '/admin/dashboard/top-products',
-      params: { limit },
-    });
+    try {
+      return await this.request({
+        method: 'GET',
+        url: '/admin/dashboard/top-products',
+        params: { limit },
+      });
+    } catch (error: any) {
+      if (error?.response?.status === 404) {
+        console.warn('Admin top products endpoint not available, returning empty array');
+        return {
+          success: true,
+          message: 'Using fallback data - admin endpoint not available',
+          data: []
+        };
+      }
+      throw error;
+    }
   }
 
   async getAnalytics(): Promise<ApiResponse<any>> {
@@ -837,6 +882,26 @@ class ApiService {
       url: `/admin/products/${productId}/status`,
       data: { status },
     });
+  }
+
+  // Admin test endpoint to check if admin routes are deployed
+  async testAdminRoutes(): Promise<ApiResponse<any>> {
+    try {
+      return await this.request({
+        method: 'GET',
+        url: '/admin/test',
+      });
+    } catch (error: any) {
+      if (error?.response?.status === 404) {
+        console.warn('Admin routes not yet deployed to production');
+        return {
+          success: false,
+          message: 'Admin routes not available - backend deployment pending',
+          data: null
+        };
+      }
+      throw error;
+    }
   }
 }
 
