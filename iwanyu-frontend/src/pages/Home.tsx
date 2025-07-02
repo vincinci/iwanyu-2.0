@@ -82,8 +82,8 @@ const Home: React.FC = () => {
           setFeaturedProducts([]);
         }
 
-        if (categoriesResponse.success && categoriesResponse.data?.length > 0) {
-          setCategories(categoriesResponse.data);
+        if (categoriesResponse.success && categoriesResponse.data?.categories?.length > 0) {
+          setCategories(categoriesResponse.data.categories);
         } else {
           setCategories([]);
         }

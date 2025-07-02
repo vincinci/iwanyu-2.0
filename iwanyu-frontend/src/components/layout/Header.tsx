@@ -33,8 +33,8 @@ const Header: React.FC = () => {
     const fetchCategories = async () => {
       try {
         const response = await apiService.getCategories();
-        if (response.success && response.data) {
-          setCategories(response.data.slice(0, 6)); // Limit to 6 categories for header
+        if (response.success && response.data && response.data.categories) {
+          setCategories(response.data.categories.slice(0, 6)); // Limit to 6 categories for header
         }
       } catch (error) {
         console.error('Error fetching categories:', error);

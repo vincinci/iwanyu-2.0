@@ -61,8 +61,8 @@ const AddProduct: React.FC = () => {
   const fetchCategories = async () => {
     try {
       const response = await apiService.getCategories();
-      if (response.success) {
-        setCategories(response.data);
+      if (response.success && response.data?.categories) {
+        setCategories(response.data.categories);
       }
     } catch (error) {
       console.error('Failed to fetch categories:', error);
