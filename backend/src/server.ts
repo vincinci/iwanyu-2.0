@@ -125,6 +125,32 @@ app.get('/api/health', async (req, res) => {
   });
 });
 
+// Root route - API info
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Iwanyu E-commerce API',
+    version: '1.0.0',
+    status: 'running',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      products: '/api/products',
+      categories: '/api/categories',
+      users: '/api/users',
+      vendors: '/api/vendors',
+      orders: '/api/orders',
+      cart: '/api/cart',
+      payments: '/api/payments'
+    },
+    documentation: 'https://github.com/vincinci/iwanyu-2.0'
+  });
+});
+
+// Health check shortcut (for monitoring tools that expect /health)
+app.get('/health', (req, res) => {
+  res.redirect('/api/health');
+});
+
 // API Routes with database connection requirements for critical endpoints
 app.use('/api/auth', authRoutes);
 app.use('/api/users', requireDatabaseConnection, userRoutes);
