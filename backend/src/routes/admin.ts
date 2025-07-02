@@ -25,7 +25,12 @@ const router = express.Router();
 
 // Debug route to test admin routes are working
 router.get('/test', (req, res) => {
-  res.json({ message: 'Admin routes are working', timestamp: new Date().toISOString() });
+  console.log('🔧 Admin test route called');
+  res.json({ 
+    message: 'Admin routes are working - v2', 
+    timestamp: new Date().toISOString(),
+    deployment: 'Latest version'
+  });
 });
 
 // Temporary simple route for dashboard stats

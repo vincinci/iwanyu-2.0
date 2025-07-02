@@ -162,13 +162,15 @@ app.use('/api/orders', requireDatabaseConnection, orderRoutes);
 app.use('/api/payments', requireDatabaseConnection, paymentRoutes);
 app.use('/api/upload', uploadRoutes);
 
-// Debug: Log when admin routes are being mounted
-console.log('🔧 Mounting admin routes...');
+// Debug: Log when admin routes are being mounted - DEPLOYMENT CHECK
+console.log('🔧 [DEPLOY-CHECK] Mounting admin routes at /api/admin...');
 try {
   app.use('/api/admin', adminRoutes); // Remove database middleware temporarily for debugging
-  console.log('✅ Admin routes mounted successfully');
+  console.log('✅ [DEPLOY-CHECK] Admin routes mounted successfully at /api/admin');
+  console.log('🔧 [DEPLOY-CHECK] Admin routes should be available at: /api/admin/test, /api/admin/dashboard/stats');
+  console.log('📊 [DEPLOY-CHECK] Deployment timestamp:', new Date().toISOString());
 } catch (error) {
-  console.error('❌ Failed to mount admin routes:', error);
+  console.error('❌ [DEPLOY-CHECK] Failed to mount admin routes:', error);
 }
 
 app.use('/api/analytics', requireDatabaseConnection, analyticsRoutes);
