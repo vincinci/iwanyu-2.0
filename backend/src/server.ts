@@ -30,6 +30,7 @@ import analyticsRoutes from './routes/analytics';
 import importRoutes from './routes/import';
 import cartRoutes from './routes/cart';
 import checkoutRoutes from './routes/checkout';
+import testRoutes from './routes/test';
 
 // Import middleware
 import { errorHandler } from './middleware/errorHandler';
@@ -219,6 +220,10 @@ app.use('/api/checkout', requireDatabaseConnection, checkoutRoutes);
 app.use('/api/orders', requireDatabaseConnection, orderRoutes);
 app.use('/api/payments', requireDatabaseConnection, paymentRoutes);
 app.use('/api/upload', uploadRoutes);
+
+// TEST ROUTE - Simple deployment verification
+app.use('/api/test', testRoutes);
+console.log('🧪 [TEST-ROUTE] Test routes mounted at /api/test');
 
 // Debug: Log when admin routes are being mounted - DEPLOYMENT CHECK - v4
 console.log('🔧 [DEPLOY-CHECK-v4] Mounting admin routes at /api/admin...');
