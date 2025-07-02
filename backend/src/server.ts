@@ -161,13 +161,18 @@ app.use('/api/checkout', requireDatabaseConnection, checkoutRoutes);
 app.use('/api/orders', requireDatabaseConnection, orderRoutes);
 app.use('/api/payments', requireDatabaseConnection, paymentRoutes);
 app.use('/api/upload', uploadRoutes);
+
+// Debug: Log when admin routes are being mounted
+console.log('🔧 Mounting admin routes...');
 app.use('/api/admin', requireDatabaseConnection, adminRoutes);
+console.log('✅ Admin routes mounted successfully');
+
 app.use('/api/analytics', requireDatabaseConnection, analyticsRoutes);
 app.use('/api/import', requireDatabaseConnection, importRoutes);
 
 // Catch-all for frontend routes - redirect to frontend domain
 // This handles cases where users directly visit /login, /dashboard, etc.
-const FRONTEND_URL = process.env.FRONTEND_URL || 'https://iwanyu-frontend.vercel.app';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://iwanyu-2-0.vercel.app';
 
 app.get('*', (req, res) => {
   // Check if this looks like a frontend route (not an API route)
