@@ -80,10 +80,17 @@ class ApiService {
       (response) => response,
       (error) => {
         if (error.response?.status === 401) {
-          // Token expired or invalid
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          window.location.href = '/login';
+          // Don't redirect if we're on login/register pages or during auth requests
+          const currentPath = window.location.pathname;
+          const isAuthPage = currentPath === '/login' || currentPath === '/register';
+          const isAuthRequest = error.config?.url?.includes('/auth/');
+          
+          if (!isAuthPage && !isAuthRequest) {
+            // Token expired or invalid - only redirect if not on auth pages
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+          }
         }
         return Promise.reject(error);
       }
@@ -181,7 +188,13 @@ class ApiService {
         throw new Error('Login is taking longer than expected. The backend may be starting up (cold start). Please wait a moment and try again.');
       }
       
-      const message = error.response?.data?.message || error.message || 'Login failed';
+      // Handle specific authentication errors
+      if (error.response?.status === 401) {
+        const message = error.response?.data?.error || error.response?.data?.message || 'Invalid email or password';
+        throw new Error(message);
+      }
+      
+      const message = error.response?.data?.message || error.response?.data?.error || error.message || 'Login failed';
       throw new Error(message);
     }
   }
@@ -218,7 +231,18 @@ class ApiService {
         throw new Error('Registration is taking longer than expected. The backend may be starting up (cold start). Please wait a moment and try again.');
       }
       
-      const message = error.response?.data?.message || error.message || 'Registration failed';
+      // Handle specific registration errors
+      if (error.response?.status === 401) {
+        const message = error.response?.data?.error || error.response?.data?.message || 'Registration failed - invalid data';
+        throw new Error(message);
+      }
+      
+      if (error.response?.status === 409) {
+        const message = error.response?.data?.error || error.response?.data?.message || 'An account with this email already exists';
+        throw new Error(message);
+      }
+      
+      const message = error.response?.data?.message || error.response?.data?.error || error.message || 'Registration failed';
       throw new Error(message);
     }
   }
