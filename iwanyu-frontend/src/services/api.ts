@@ -66,11 +66,27 @@ class ApiService {
 
   // Auth methods
   async login(email: string, password: string): Promise<ApiResponse<AuthResponse>> {
-    return this.request({
-      method: 'POST',
-      url: '/auth/login',
-      data: { email, password },
-    });
+    try {
+      const response = await this.api({
+        method: 'POST',
+        url: '/auth/login',
+        data: { email, password },
+      });
+      
+      // Backend returns {message, user, token} directly
+      // Transform to expected format {success, data: {user, token}}
+      return {
+        success: true,
+        message: response.data.message,
+        data: {
+          user: response.data.user,
+          token: response.data.token
+        }
+      };
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Login failed';
+      throw new Error(message);
+    }
   }
 
   async register(userData: {
@@ -81,11 +97,27 @@ class ApiService {
     phone?: string;
     role?: 'CUSTOMER' | 'VENDOR';
   }): Promise<ApiResponse<AuthResponse>> {
-    return this.request({
-      method: 'POST',
-      url: '/auth/register',
-      data: userData,
-    });
+    try {
+      const response = await this.api({
+        method: 'POST',
+        url: '/auth/register',
+        data: userData,
+      });
+      
+      // Backend returns {message, user, token} directly
+      // Transform to expected format {success, data: {user, token}}
+      return {
+        success: true,
+        message: response.data.message,
+        data: {
+          user: response.data.user,
+          token: response.data.token
+        }
+      };
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || 'Registration failed';
+      throw new Error(message);
+    }
   }
 
   async getProfile(): Promise<ApiResponse<any>> {
