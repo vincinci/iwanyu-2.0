@@ -10,10 +10,11 @@ services:
   - type: web
     name: iwanyu-backend
     env: node
+    rootDir: backend
     plan: free
-    buildCommand: cd backend && npm ci && npm run build
-    startCommand: cd backend && npx prisma generate && npx prisma migrate deploy && npm start
-    healthCheckPath: /health
+    buildCommand: npm ci && npm run build
+    startCommand: npx prisma generate && npx prisma migrate deploy && npm start
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
@@ -35,4 +36,3 @@ services:
         value: FLWSECK-cc842f4c47bf0059d3854bf053c11296-1973d2d141dvt-X
       - key: FLUTTERWAVE_ENCRYPTION_KEY
         value: cc842f4c47bf3f882628801e
-    rootDir: backend
