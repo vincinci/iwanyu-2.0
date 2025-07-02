@@ -20,6 +20,11 @@ import { UserRole } from '../types/enums';
 
 const router = express.Router();
 
+// Debug route to test admin routes are working
+router.get('/test', (req, res) => {
+  res.json({ message: 'Admin routes are working', timestamp: new Date().toISOString() });
+});
+
 // Admin dashboard endpoints
 router.get('/dashboard/stats', authenticate, authorize(UserRole.ADMIN), getDashboardStats);
 router.get('/dashboard/recent-orders', authenticate, authorize(UserRole.ADMIN), getRecentOrders);
