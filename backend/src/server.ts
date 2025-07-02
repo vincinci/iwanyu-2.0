@@ -120,7 +120,49 @@ app.get('/api/health', async (req, res) => {
     },
     version: process.version,
     memory: process.memoryUsage(),
-    environment: process.env.NODE_ENV
+    environment: process.env.NODE_ENV,
+    availableRoutes: {
+      auth: [
+        'POST /api/auth/register',
+        'POST /api/auth/login', 
+        'GET /api/auth/profile',
+        'PUT /api/auth/profile',
+        'POST /api/auth/change-password'
+      ],
+      products: [
+        'GET /api/products',
+        'GET /api/products/:id',
+        'POST /api/products',
+        'PUT /api/products/:id',
+        'DELETE /api/products/:id'
+      ],
+      categories: [
+        'GET /api/categories',
+        'GET /api/categories/:id',
+        'POST /api/categories',
+        'PUT /api/categories/:id'
+      ],
+      cart: [
+        'GET /api/cart',
+        'POST /api/cart/add',
+        'PUT /api/cart/update',
+        'DELETE /api/cart/remove'
+      ],
+      orders: [
+        'GET /api/orders',
+        'GET /api/orders/:id',
+        'POST /api/orders',
+        'PUT /api/orders/:id/status'
+      ],
+      admin: [
+        'GET /api/admin/test',
+        'GET /api/admin/dashboard/stats',
+        'GET /api/admin/dashboard/recent-orders',
+        'GET /api/admin/users',
+        'GET /api/admin/orders',
+        'GET /api/admin/vendors'
+      ]
+    }
   });
 });
 
@@ -130,16 +172,30 @@ app.get('/', (req, res) => {
     message: 'Iwanyu E-commerce API',
     version: '1.0.0',
     status: 'running',
+    timestamp: new Date().toISOString(),
     endpoints: {
       health: '/api/health',
-      auth: '/api/auth',
-      products: '/api/products',
-      categories: '/api/categories',
-      users: '/api/users',
-      vendors: '/api/vendors',
-      orders: '/api/orders',
-      cart: '/api/cart',
-      payments: '/api/payments'
+      auth: {
+        register: 'POST /api/auth/register',
+        login: 'POST /api/auth/login',
+        profile: 'GET /api/auth/profile'
+      },
+      products: {
+        list: 'GET /api/products',
+        get: 'GET /api/products/:id',
+        create: 'POST /api/products'
+      },
+      categories: {
+        list: 'GET /api/categories'
+      },
+      cart: {
+        get: 'GET /api/cart',
+        add: 'POST /api/cart/add'
+      },
+      admin: {
+        test: 'GET /api/admin/test',
+        dashboard: 'GET /api/admin/dashboard/stats'
+      }
     },
     documentation: 'https://github.com/vincinci/iwanyu-2.0'
   });
@@ -162,15 +218,15 @@ app.use('/api/orders', requireDatabaseConnection, orderRoutes);
 app.use('/api/payments', requireDatabaseConnection, paymentRoutes);
 app.use('/api/upload', uploadRoutes);
 
-// Debug: Log when admin routes are being mounted - DEPLOYMENT CHECK - v3
-console.log('🔧 [DEPLOY-CHECK-v3] Mounting admin routes at /api/admin...');
+// Debug: Log when admin routes are being mounted - DEPLOYMENT CHECK - v4
+console.log('🔧 [DEPLOY-CHECK-v4] Mounting admin routes at /api/admin...');
 try {
-  app.use('/api/admin', adminRoutes); // Remove database middleware temporarily for debugging
-  console.log('✅ [DEPLOY-CHECK-v3] Admin routes mounted successfully at /api/admin');
-  console.log('🔧 [DEPLOY-CHECK-v3] Admin routes should be available at: /api/admin/test, /api/admin/dashboard/stats');
-  console.log('📊 [DEPLOY-CHECK-v3] Deployment timestamp:', new Date().toISOString());
+  app.use('/api/admin', requireDatabaseConnection, adminRoutes); // Re-add database middleware
+  console.log('✅ [DEPLOY-CHECK-v4] Admin routes mounted successfully at /api/admin');
+  console.log('🔧 [DEPLOY-CHECK-v4] Admin routes should be available at: /api/admin/test, /api/admin/dashboard/stats');
+  console.log('📊 [DEPLOY-CHECK-v4] Deployment timestamp:', new Date().toISOString());
 } catch (error) {
-  console.error('❌ [DEPLOY-CHECK-v3] Failed to mount admin routes:', error);
+  console.error('❌ [DEPLOY-CHECK-v4] Failed to mount admin routes:', error);
 }
 
 app.use('/api/analytics', requireDatabaseConnection, analyticsRoutes);
@@ -180,36 +236,58 @@ app.use('/api/import', requireDatabaseConnection, importRoutes);
 // This handles cases where users directly visit /login, /dashboard, etc.
 const FRONTEND_URL = process.env.FRONTEND_URL || 'https://iwanyu-2-0.vercel.app';
 
+// API 404 handler - only for /api/* routes
+app.use('/api/*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    error: 'API Route Not Found',
+    message: `The API endpoint ${req.originalUrl} was not found on this server.`,
+    path: req.originalUrl,
+    method: req.method,
+    timestamp: new Date().toISOString(),
+    availableEndpoints: [
+      '/api/health',
+      '/api/auth/login',
+      '/api/auth/register', 
+      '/api/products',
+      '/api/categories',
+      '/api/cart',
+      '/api/orders',
+      '/api/admin',
+      '/api/users',
+      '/api/vendors'
+    ]
+  });
+});
+
+// Frontend route redirects - for non-API routes only
 app.get('*', (req, res) => {
-  // Check if this looks like a frontend route (not an API route)
-  if (!req.path.startsWith('/api') && !req.path.startsWith('/health')) {
-    // Common frontend routes that should be redirected
-    const frontendRoutes = [
-      '/login', '/register', '/dashboard', '/profile', '/cart', '/checkout',
-      '/products', '/collections', '/search', '/orders', '/wishlist',
-      '/vendor', '/admin', '/about', '/contact', '/become-vendor',
-      '/payment-methods', '/security', '/forgot-password'
-    ];
-    
-    // Check if this is a frontend route or starts with one
-    const isFrontendRoute = frontendRoutes.some(route => 
-      req.path === route || req.path.startsWith(route + '/')
-    );
-    
-    if (isFrontendRoute || req.path === '/') {
-      // Redirect to frontend with the same path and query string
-      const queryString = Object.keys(req.query).length > 0 ? '?' + new URLSearchParams(req.query as any).toString() : '';
-      const redirectUrl = `${FRONTEND_URL}${req.path}${queryString}`;
-      console.log(`🔄 Redirecting frontend route ${req.path} to ${redirectUrl}`);
-      return res.redirect(302, redirectUrl);
-    }
+  // Common frontend routes that should be redirected
+  const frontendRoutes = [
+    '/login', '/register', '/dashboard', '/profile', '/cart', '/checkout',
+    '/products', '/collections', '/search', '/orders', '/wishlist',
+    '/vendor', '/admin', '/about', '/contact', '/become-vendor',
+    '/payment-methods', '/security', '/forgot-password'
+  ];
+  
+  // Check if this is a frontend route or starts with one
+  const isFrontendRoute = frontendRoutes.some(route => 
+    req.path === route || req.path.startsWith(route + '/')
+  );
+  
+  if (isFrontendRoute || req.path === '/') {
+    // Redirect to frontend with the same path and query string
+    const queryString = Object.keys(req.query).length > 0 ? '?' + new URLSearchParams(req.query as any).toString() : '';
+    const redirectUrl = `${FRONTEND_URL}${req.path}${queryString}`;
+    console.log(`🔄 Redirecting frontend route ${req.path} to ${redirectUrl}`);
+    return res.redirect(302, redirectUrl);
   }
   
-  // If not a frontend route, continue to notFound middleware
+  // For unknown routes, show a helpful 404
   res.status(404).json({
     success: false,
     error: 'Not Found',
-    message: `The requested resource ${req.originalUrl} was not found on this server. This is an API server - visit ${FRONTEND_URL} for the web application.`,
+    message: `The requested resource ${req.originalUrl} was not found. This is an API server - visit ${FRONTEND_URL} for the web application.`,
     path: req.originalUrl,
     method: req.method,
     timestamp: new Date().toISOString(),

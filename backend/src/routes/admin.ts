@@ -1,6 +1,4 @@
 import express from 'express';
-// Temporarily comment out controller imports for debugging
-/*
 import { 
   getDashboardStats, 
   getRecentOrders, 
@@ -17,7 +15,6 @@ import {
   getAllProducts,
   updateProductStatus
 } from '../controllers/admin';
-*/
 import { authenticate, authorize } from '../middleware/auth';
 import { UserRole } from '../types/enums';
 
@@ -25,40 +22,25 @@ const router = express.Router();
 
 // Debug route to test admin routes are working
 router.get('/test', (req, res) => {
-  console.log('🔧 Admin test route called - v3');
+  console.log('🔧 Admin test route called - v4');
   res.json({ 
-    message: 'Admin routes are working - v3', 
+    message: 'Admin routes are working - v4', 
     timestamp: new Date().toISOString(),
-    deployment: 'Latest version - v3'
+    deployment: 'Latest version - v4',
+    routes: [
+      '/api/admin/test',
+      '/api/admin/dashboard/stats',
+      '/api/admin/dashboard/recent-orders',
+      '/api/admin/dashboard/top-products',
+      '/api/admin/users',
+      '/api/admin/orders',
+      '/api/admin/vendors',
+      '/api/admin/products'
+    ]
   });
 });
 
-// Temporary simple route for dashboard stats
-router.get('/dashboard/stats', (req, res) => {
-  res.json({ 
-    message: 'Admin dashboard stats endpoint working',
-    stats: { totalUsers: 0, totalOrders: 0, totalRevenue: 0 }
-  });
-});
-
-// Temporary simple route for recent orders
-router.get('/dashboard/recent-orders', (req, res) => {
-  res.json({ 
-    message: 'Admin recent orders endpoint working',
-    orders: []
-  });
-});
-
-// Temporary simple route for top products
-router.get('/dashboard/top-products', (req, res) => {
-  res.json({ 
-    message: 'Admin top products endpoint working',
-    products: []
-  });
-});
-
-/*
-// Admin dashboard endpoints - commented out for debugging
+// Admin dashboard endpoints
 router.get('/dashboard/stats', authenticate, authorize(UserRole.ADMIN), getDashboardStats);
 router.get('/dashboard/recent-orders', authenticate, authorize(UserRole.ADMIN), getRecentOrders);
 router.get('/dashboard/top-products', authenticate, authorize(UserRole.ADMIN), getTopProducts);
@@ -83,6 +65,5 @@ router.put('/orders/:id/status', authenticate, authorize(UserRole.ADMIN), update
 router.get('/analytics', authenticate, authorize(UserRole.ADMIN), getAnalyticsReports);
 router.get('/analytics/sales', authenticate, authorize(UserRole.ADMIN), getSalesReport);
 router.get('/analytics/users', authenticate, authorize(UserRole.ADMIN), getUserReport);
-*/
 
 export default router;
